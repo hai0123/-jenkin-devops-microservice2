@@ -8,7 +8,7 @@ pipeline {
 		PATH = "$dockerHome/bin:$mavenHome/bin:$PATH"
 	}
 	stages{
-		stage('Checkout'){
+		stage('Checkout') {
 			steps{
 				sh 'mvn --version'	
 				sh 'docker version'				
@@ -21,19 +21,44 @@ pipeline {
 				echo "BUILD_URL - $env.BUILD_URL"
 			}
 		}
-		stage('Compile'){
+		stage('Compile') {
 			steps{
 				sh "mvn clean compile"
 			}
 		}
-		stage('Test'){
+		stage('Test') {
 			steps{
 				sh "mvn test"
 			}
 		}
-		stage('Integraion Test'){
+		stage('Integraion Test') {
 			steps{
-				sh  "mvn failsafe:integration-test failsafe:verify"
+				sh  "mvn failsafe:integration-test failsafe:verify "
+			}
+		}
+		stage('Package') {
+			steps{
+				sh  "mvn package -DskipTests"
+			}
+		}
+		stage('Build Docker Image') {
+			steps{
+				//docker build -t nagaraju12/jenkin-devop-microservice:$env.BUILD_TAG
+				script {
+					dockerimage = docker.build("nagaraju12/jenkin-devop-microservice:$env.BUILD_TAG")
+				}
+		
+			}
+		}
+		stage('Push Docker Image') {
+			steps{
+				script{
+					docker.withRegistry('', 'dockerhub'){
+					dockerImage.push();
+					dockerImage.push('latest');
+					}
+
+				}
 			}
 		}
 	} 
