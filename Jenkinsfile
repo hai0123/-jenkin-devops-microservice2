@@ -43,9 +43,9 @@ pipeline {
 		}
 		stage('Build Docker Image') {
 			steps{
-				//docker build -t nagaraju12/jenkin-devop-microservice:$env.BUILD_TAG
+				//"docker build -t nagaraju12/jenkin-devop-microservice:$env.BUILD_TAG"
 				script {
-					dockerimage = docker.build("nagaraju12/jenkin-devop-microservice:$env.BUILD_TAG")
+					dockerimage = docker.build("nagaraju12/jenkin-devop-microservice:${env.BUILD_TAG}")
 				}
 		
 			}
